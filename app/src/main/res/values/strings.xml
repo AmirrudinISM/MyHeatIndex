@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">My Heat Index</string>
+    <string name="hi_desc">
+        The heat index, also known as the apparent temperature, is what the temperature feels like to the human body when relative humidity is combined with the air temperature.  This has important considerations for the human body\'s comfort.
+    </string>
+    <string name="hi_calc_desc">
+        Use this weather calculator if you prefer to enter numbers manually instead of reading a chart.  If you\'re really mathematically inclined, there is an equation that gives a very close approximation to the heat index.  However, this equation was obtained using a multiple regression analysis, and therefore, it has an error of ±1.3°F.
+        Heat Index = -42.379 + 2.04901523T + 10.14333127R - 0.22475541TR - 6.83783 x 10-3T2 - 5.481717 x 10-2R2 + 1.22874 x 10-3T2R + 8.5282 x 10-4TR2 - 1.99 x 10-6T2R2
+        T - air temperature (F)
+        R - relative humidity (percentage)
+    </string>
+    <!-- TODO: Remove or change this placeholder text -->
+</resources>
