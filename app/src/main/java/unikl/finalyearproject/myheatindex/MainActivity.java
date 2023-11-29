@@ -4,12 +4,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
-
-import android.app.ActionBar;
 import android.os.Bundle;
 
 import com.google.android.material.appbar.MaterialToolbar;
-import com.google.android.material.bottomappbar.BottomAppBar;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import unikl.finalyearproject.myheatindex.databinding.ActivityMainBinding;
@@ -25,7 +22,7 @@ public class MainActivity extends AppCompatActivity {
         BottomNavigationView bottomAppBar = findViewById(R.id.bottom_nav);
         appBar = findViewById(R.id.topbar);
         bottomAppBar.getMenu().findItem(R.id.nav_weather).setChecked(true);
-        appBar.setTitle("Weather");
+        appBar.setTitle("My Heat Index");
         replaceFragment(new WeatherFragment());
 
         binding.bottomNav.setOnItemSelectedListener(item -> {

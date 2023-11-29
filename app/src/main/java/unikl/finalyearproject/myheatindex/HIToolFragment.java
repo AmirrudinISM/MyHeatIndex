@@ -76,14 +76,13 @@ public class HIToolFragment extends Fragment {
         classification = rootView.findViewById(R.id.classification);
 
         btnResult.setOnClickListener(
-                view -> {
-                    double temperatureVal =  Double.parseDouble(temperature.getText().toString());
-                    double humidityVal = Double.parseDouble(humidity.getText().toString());
-                    double resultVal = calculateHeatIndex(temperatureVal, humidityVal);
-                    result.setText("Heat Index: " + String.valueOf(resultVal));
-                    classification.setText("Classification: " + heatIndexClassification(resultVal));
-
-                }
+            view -> {
+                double temperatureVal =  Double.parseDouble(temperature.getText().toString());
+                double humidityVal = Double.parseDouble(humidity.getText().toString());
+                double resultVal = calculateHeatIndex(temperatureVal, humidityVal);
+                result.setText("Heat Index: " + String.valueOf(resultVal));
+                classification.setText("Classification: " + heatIndexClassification(resultVal));
+            }
         );
 
         return rootView;
