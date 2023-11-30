@@ -13,8 +13,12 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -76,12 +80,36 @@ public class WeatherFragment extends Fragment {
         String url = "https://api.open-meteo.com/v1/forecast?latitude=3.1412&longitude=101.6865&hourly=temperature_2m,relative_humidity_2m&timezone=auto&forecast_days=1";
 
         // Request a string response from the provided URL.
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
-                new Response.Listener<String>() {
+        JsonObjectRequest jsonRequest = new JsonObjectRequest(Request.Method.GET, url,null,
+                new Response.Listener<JSONObject>() {
                     @Override
-                    public void onResponse(String response) {
-                        // Display the first 500 characters of the response string.
-                        tvResponse.setText("Response is: " + response);
+                    public void onResponse(JSONObject response) {
+                        try {
+                            // Extract the "hourly" object
+                            JSONObject hourlyObject = response.getJSONObject("hourly");
+
+                            // Extract the "temperature_2m" array
+                            JSONArray temperatureArray = hourlyObject.getJSONArray("temperature_2m");
+                            JSONArray humidityArray = hourlyObject.getJSONArray("relative_humidity_2m");
+
+                            // Convert the JSONArray to a double array
+                            double[] temperatureValues = new double[temperatureArray.length()];
+                            for (int i = 0; i < temperatureArray.length(); i++) {
+                                temperatureValues[i] = temperatureArray.getDouble(i);
+                            }
+
+                            // Convert the JSONArray to a double array
+                            double[] humidityValues = new double[humidityArray.length()];
+                            for (int i = 0; i < humidityArray.length(); i++) {
+                                humidityValues[i] = humidityArray.getDouble(i);
+                            }
+                            // Display the first 500 characters of the response string.
+                            tvResponse.setText("Temperature: " + temperatureValues[7]+", Humidity: " + humidityValues[7]);
+                        }
+                        catch (Exception e){
+
+                        }
+
                     }
                 }, new Response.ErrorListener() {
             @Override
@@ -91,7 +119,7 @@ public class WeatherFragment extends Fragment {
         });
 
 // Add the request to the RequestQueue.
-        queue.add(stringRequest);
+        queue.add(jsonRequest);
 
 
 
