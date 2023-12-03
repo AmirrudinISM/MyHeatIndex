@@ -23,6 +23,8 @@ public class HIToolFragment extends Fragment {
     EditText temperature, humidity;
     Button btnResult;
 
+
+
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -72,16 +74,17 @@ public class HIToolFragment extends Fragment {
         temperature = rootView.findViewById(R.id.temperature);
         humidity = rootView.findViewById(R.id.humidity);
         btnResult = rootView.findViewById(R.id.calculate);
-        result = rootView.findViewById(R.id.result);
-        classification = rootView.findViewById(R.id.classification);
+        result = rootView.findViewById(R.id.tv_heat_index);
+        classification = rootView.findViewById(R.id.tv_risk_level);
 
         btnResult.setOnClickListener(
             view -> {
                 double temperatureVal =  Double.parseDouble(temperature.getText().toString());
                 double humidityVal = Double.parseDouble(humidity.getText().toString());
                 double resultVal = calculateHeatIndex(temperatureVal, humidityVal);
-                result.setText("Heat Index: " + String.valueOf(resultVal));
-                classification.setText("Classification: " + heatIndexClassification(resultVal));
+                result.setText(resultVal + " °F");
+
+                classification.setText("Your risk level is: " + heatIndexClassification(resultVal));
             }
         );
 

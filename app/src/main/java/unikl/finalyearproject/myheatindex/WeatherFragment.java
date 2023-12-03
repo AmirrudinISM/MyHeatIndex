@@ -7,7 +7,9 @@ import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -19,6 +21,10 @@ import com.android.volley.toolbox.Volley;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -74,10 +80,10 @@ public class WeatherFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_weather, container, false);
-        this.tvResponse = rootView.findViewById(R.id.responseString);
+        ListView listView = rootView.findViewById(R.id.weather_list);
         // Instantiate the RequestQueue.
         RequestQueue queue = Volley.newRequestQueue(getContext());
-        String url = "https://api.open-meteo.com/v1/forecast?latitude=3.1412&longitude=101.6865&hourly=temperature_2m,relative_humidity_2m&timezone=auto&forecast_days=1";
+        String url = "https://api.open-meteo.com/v1/forecast?latitude=3.1412&longitude=101.6865&current=temperature_2m,relative_humidity_2m,weather_code&hourly=temperature_2m,relative_humidity_2m,weather_code&temperature_unit=fahrenheit&timezone=auto&forecast_days=1";
 
         // Request a string response from the provided URL.
         JsonObjectRequest jsonRequest = new JsonObjectRequest(Request.Method.GET, url,null,
@@ -85,29 +91,44 @@ public class WeatherFragment extends Fragment {
                     @Override
                     public void onResponse(JSONObject response) {
                         try {
+                            //Extract "current" object
+                            JSONObject currentObject = response.getJSONObject("current");
+                            WeatherData currentWeatherData = new WeatherData("", currentObject.getDouble("temperature_2m"), currentObject.getDouble("relative_humidity_2m"));
+
+                            TextView currentHeatIndex = rootView.findViewById(R.id.tv_weather_heat_index);
+                            currentHeatIndex.setText(Double.toString(currentWeatherData.getHeatIndex()));
+
+                            TextView currentDangerLevel = rootView.findViewById(R.id.tv_weather_risk_level);
+                            currentDangerLevel.setText(currentWeatherData.dangerLevel());
+
+
                             // Extract the "hourly" object
                             JSONObject hourlyObject = response.getJSONObject("hourly");
 
                             // Extract the "temperature_2m" array
                             JSONArray temperatureArray = hourlyObject.getJSONArray("temperature_2m");
                             JSONArray humidityArray = hourlyObject.getJSONArray("relative_humidity_2m");
+                            JSONArray timeArray = hourlyObject.getJSONArray("time");
 
                             // Convert the JSONArray to a double array
                             double[] temperatureValues = new double[temperatureArray.length()];
+
+                            ArrayList<WeatherData> weatherData = new ArrayList<>();
                             for (int i = 0; i < temperatureArray.length(); i++) {
-                                temperatureValues[i] = temperatureArray.getDouble(i);
+                                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm");
+                                LocalDateTime dateTime = LocalDateTime.parse(timeArray.getString(i), formatter);
+
+                                // Extracting the time substring
+                                String timeSubstring = dateTime.format(DateTimeFormatter.ofPattern("HH:mm"));
+                                weatherData.add(new WeatherData(timeSubstring, temperatureArray.getDouble(i), humidityArray.getDouble(i)));
                             }
 
-                            // Convert the JSONArray to a double array
-                            double[] humidityValues = new double[humidityArray.length()];
-                            for (int i = 0; i < humidityArray.length(); i++) {
-                                humidityValues[i] = humidityArray.getDouble(i);
-                            }
-                            // Display the first 500 characters of the response string.
-                            tvResponse.setText("Temperature: " + temperatureValues[7]+", Humidity: " + humidityValues[7]);
+                            HourlyWeatherDataAdapter hourlyWeatherDataAdapter = new HourlyWeatherDataAdapter(getContext(), weatherData);
+                            listView.setAdapter(hourlyWeatherDataAdapter);
+
                         }
                         catch (Exception e){
-
+                            Toast.makeText(getContext(), "Problem in fetching data", Toast.LENGTH_LONG).show();
                         }
 
                     }
