@@ -14,6 +14,7 @@ import unikl.finalyearproject.myheatindex.databinding.ActivityMainBinding;
 public class MainActivity extends AppCompatActivity {
     ActivityMainBinding binding;
     MaterialToolbar appBar;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -26,7 +27,7 @@ public class MainActivity extends AppCompatActivity {
         replaceFragment(new WeatherFragment());
 
         binding.bottomNav.setOnItemSelectedListener(item -> {
-            if(item.getItemId() == R.id.nav_hi_tool){
+            if (item.getItemId() == R.id.nav_hi_tool) {
                 appBar.setTitle("Heat Index Tool");
                 replaceFragment(new HIToolFragment());
             } else if (item.getItemId() == R.id.nav_weather) {
@@ -40,7 +41,7 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private void replaceFragment(Fragment fragment){
+    private void replaceFragment(Fragment fragment) {
 
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
