@@ -7,6 +7,7 @@ import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -16,8 +17,8 @@ import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.google.android.material.progressindicator.LinearProgressIndicator;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -81,6 +82,9 @@ public class WeatherFragment extends Fragment {
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_weather, container, false);
         ListView listView = rootView.findViewById(R.id.weather_list);
+
+        LinearProgressIndicator progressBar = rootView.findViewById(R.id.progressBar);
+        progressBar.setVisibility(View.VISIBLE);
         // Instantiate the RequestQueue.
         RequestQueue queue = Volley.newRequestQueue(getContext());
         String url = "https://api.open-meteo.com/v1/forecast?latitude=3.1412&longitude=101.6865&current=temperature_2m,relative_humidity_2m,weather_code&hourly=temperature_2m,relative_humidity_2m,weather_code&temperature_unit=fahrenheit&timezone=auto&forecast_days=1";
@@ -91,16 +95,54 @@ public class WeatherFragment extends Fragment {
                     @Override
                     public void onResponse(JSONObject response) {
                         try {
+                            progressBar.setVisibility(View.GONE);
                             //Extract "current" object
                             JSONObject currentObject = response.getJSONObject("current");
                             WeatherData currentWeatherData = new WeatherData("", currentObject.getDouble("temperature_2m"), currentObject.getDouble("relative_humidity_2m"));
 
+                            //current heat index
                             TextView currentHeatIndex = rootView.findViewById(R.id.tv_weather_heat_index);
                             currentHeatIndex.setText(Double.toString(currentWeatherData.getHeatIndex()));
 
+                            //current risk level
                             TextView currentDangerLevel = rootView.findViewById(R.id.tv_weather_risk_level);
                             currentDangerLevel.setText(currentWeatherData.dangerLevel());
 
+                            //get imageview
+                            ImageView weatherIcon = rootView.findViewById(R.id.imageView);
+
+
+                            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm");
+                            LocalDateTime dateTime = LocalDateTime.parse(currentObject.getString("time"), formatter);
+                            int hour = dateTime.getHour();
+
+                            int weatherCode = currentObject.getInt("weather_code");
+                            if(weatherCode == 0 || weatherCode == 1){
+                                if( isBetween(hour,7,19)){
+                                    weatherIcon.setImageResource(R.drawable.sunny_48px);
+                                }
+                                else{
+                                    weatherIcon.setImageResource(R.drawable.clear_night_48px);
+                                }
+                            }
+                            else if(isBetween(hour, 50, 59)){
+                                weatherIcon.setImageResource(R.drawable.rainy_48px);
+                            } else if (isBetween(hour, 95,99)) {
+                                weatherIcon.setImageResource(R.drawable.thunderstorm_48px);
+                            }
+                            else {
+                                if( isBetween(hour,7,19)){
+                                    weatherIcon.setImageResource(R.drawable.partly_cloudy_day_48px);
+                                }
+                                else{
+                                    weatherIcon.setImageResource(R.drawable.nights_stay_48px);
+                                }
+                            }
+
+
+                            //current temp & humidity
+                            TextView currentTempHumidity = rootView.findViewById(R.id.tv_current_temp_humidity);
+                            currentTempHumidity.setText(currentWeatherData.getTemperature() + " °F, " + currentWeatherData.getHumidity() + "%");
 
                             // Extract the "hourly" object
                             JSONObject hourlyObject = response.getJSONObject("hourly");
@@ -110,16 +152,13 @@ public class WeatherFragment extends Fragment {
                             JSONArray humidityArray = hourlyObject.getJSONArray("relative_humidity_2m");
                             JSONArray timeArray = hourlyObject.getJSONArray("time");
 
-                            // Convert the JSONArray to a double array
-                            double[] temperatureValues = new double[temperatureArray.length()];
-
+                            String timeSubstring = "";
                             ArrayList<WeatherData> weatherData = new ArrayList<>();
                             for (int i = 0; i < temperatureArray.length(); i++) {
-                                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm");
-                                LocalDateTime dateTime = LocalDateTime.parse(timeArray.getString(i), formatter);
+                                dateTime = LocalDateTime.parse(timeArray.getString(i), formatter);
 
                                 // Extracting the time substring
-                                String timeSubstring = dateTime.format(DateTimeFormatter.ofPattern("HH:mm"));
+                                timeSubstring = dateTime.format(DateTimeFormatter.ofPattern("HH:mm"));
                                 weatherData.add(new WeatherData(timeSubstring, temperatureArray.getDouble(i), humidityArray.getDouble(i)));
                             }
 
@@ -128,6 +167,7 @@ public class WeatherFragment extends Fragment {
 
                         }
                         catch (Exception e){
+                            progressBar.setVisibility(View.GONE);
                             Toast.makeText(getContext(), "Problem in fetching data", Toast.LENGTH_LONG).show();
                         }
 
@@ -135,6 +175,7 @@ public class WeatherFragment extends Fragment {
                 }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
+                progressBar.setVisibility(View.GONE);
                 tvResponse.setText("That didn't work!");
             }
         });
@@ -146,5 +187,9 @@ public class WeatherFragment extends Fragment {
 
 
         return rootView;
+    }
+
+    public static boolean isBetween(int x, int lower, int upper) {
+        return lower <= x && x <= upper;
     }
 }

@@ -7,6 +7,8 @@
     android:layout_height="wrap_content"
     tools:context=".HourlyWeatherData"
     android:orientation="horizontal"
+    android:gravity="center"
+    android:layout_marginVertical="8dp"
     >
 
 
@@ -14,6 +16,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
+
         android:layout_marginLeft="16dp"
         android:orientation="vertical"
         android:gravity="center">
@@ -44,10 +47,9 @@
             android:textSize="24dp"
             android:text="118F"/>
         <TextView
-            android:id="@+id/tv_classfication"
+            android:id="@+id/tv_classification"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Danger"/>
+            android:layout_height="wrap_content"/>
 
     </LinearLayout>
     <LinearLayout
@@ -56,14 +58,13 @@
         android:layout_weight="1"
         android:orientation="vertical"
         android:layout_marginRight="16dp"
-        android:layout_marginVertical="8dp"
         android:gravity="center">
         <ImageView
             android:layout_gravity="center"
             android:id="@+id/img_status"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/baseline_warning_36"/>
+            android:src="@drawable/baseline_caution_36"/>
 
     </LinearLayout>
 

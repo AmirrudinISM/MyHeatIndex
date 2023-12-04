@@ -6,11 +6,20 @@ public class WeatherData {
     String time;
     double temperature;
     double humidity;
+    int weatherCode;
 
     public WeatherData(String time, double temperature, double humidity) {
         this.time = time;
         this.temperature = temperature;
         this.humidity = humidity;
+        this.weatherCode = 0;
+    }
+
+    public WeatherData(String time, double temperature, double humidity, int weatherCode) {
+        this.time = time;
+        this.temperature = temperature;
+        this.humidity = humidity;
+        this.weatherCode = weatherCode;
     }
 
     public String getTime() {
