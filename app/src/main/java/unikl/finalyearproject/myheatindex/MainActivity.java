@@ -10,7 +10,6 @@ import android.view.MenuItem;
 
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.google.android.material.navigation.NavigationBarView;
 
 import unikl.finalyearproject.myheatindex.databinding.ActivityMainBinding;
 

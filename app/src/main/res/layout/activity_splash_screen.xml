@@ -10,7 +10,7 @@
         android:id="@+id/logo"
         android:layout_width="141dp"
         android:layout_height="133dp"
-        android:src="@drawable/app_logo_2"
+        android:src="@drawable/my_heat_index_logo"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

@@ -10,5 +10,16 @@
         R - relative humidity (percentage)
     </string>
 
-    <!-- TODO: Remove or change this placeholder text -->
+    <!-- Effects -->
+    <string name="effects_caution">Fatigue is possible with prolonged exposure and/or physical activity</string>
+    <string name="effects_extreme_caution">Sunstroke, heat cramps and heat exhaustion are possible with prolonged exposure and/or physical activity</string>
+    <string name="effects_danger">Sunstroke, heat cramps and heat exhaustion are likely. Heat stroke is possible with prolonged exposure and/or physical activity</string>
+    <string name="effects_extreme_danger">Heatstroke/sunstroke is highly likely with continued exposure</string>
+    <string name="effects_safe">No risk</string>
+    <!-- Recommended actions -->
+    <string name="actions_caution">\u25CFLimit your time outdoors.\n\u25CFStay well-hydrated. Drink 10 gulps every 20 minutes.</string>
+    <string name="actions_extreme_caution">\u25CFLimit strenuous outdoor activity.\n\u25CFLimit your time outdoors.\n\u25CFStay well-hydrated. Drink 10 gulps every 20 minutes.</string>
+    <string name="actions_danger">\u25CFAvoid strenuous outdoor activity.\n\u25CFStay indoors in an air conditioned facility.\n\u25CFStay well-hydrated. Drink 10 gulps every 20 minutes.</string>
+    <string name="actions_extreme_danger">\u25CFAvoid strenuous outdoor activity.\n\u25CFStay indoors in an air conditioned facility.\n\u25CFStay well-hydrated. Drink 10 gulps every 20 minutes.\n\u25CFCheck on your family, friends, and neighbors.</string>
+    <string name="actions_safe">Proceed with routine</string>
 </resources>

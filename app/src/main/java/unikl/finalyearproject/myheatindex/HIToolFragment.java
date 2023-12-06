@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.text.DecimalFormat;
 
@@ -79,12 +80,16 @@ public class HIToolFragment extends Fragment {
 
         btnResult.setOnClickListener(
             view -> {
-                double temperatureVal =  Double.parseDouble(temperature.getText().toString());
-                double humidityVal = Double.parseDouble(humidity.getText().toString());
-                double resultVal = calculateHeatIndex(temperatureVal, humidityVal);
-                result.setText(resultVal + " °F");
 
-                classification.setText("Your risk level is: " + heatIndexClassification(resultVal));
+                if (temperature.getText().toString().isEmpty()|| humidity.getText().toString().isEmpty()) {
+                    Toast.makeText(getContext(), "Please enter all fields.", Toast.LENGTH_LONG).show();
+                } else {
+                    double temperatureVal =  Double.parseDouble(temperature.getText().toString());
+                    double humidityVal = Double.parseDouble(humidity.getText().toString());
+                    double resultVal = calculateHeatIndex(temperatureVal, humidityVal);
+                    result.setText(resultVal + " °F");
+                    classification.setText("Your risk level is: " + heatIndexClassification(resultVal));
+                }
             }
         );
 

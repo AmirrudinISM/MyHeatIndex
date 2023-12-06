@@ -60,7 +60,8 @@ public class RecommendationFragment extends Fragment {
     private String mParam1;
     private String mParam2;
 
-    TextView dangerLevel, heatIndex;
+    TextView dangerLevel, heatIndex, healthEffects, recommendedActions;
+    ImageView stockImage;
     FusedLocationProviderClient fusedLocationProviderClient;
 
     public RecommendationFragment() {
@@ -99,21 +100,27 @@ public class RecommendationFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_recommendation, container, false);
-
+        stockImage = rootView.findViewById(R.id.imageView);
+        //current heat index
+        heatIndex = rootView.findViewById(R.id.tv_weather_heat_index);
+        //current risk level
+        dangerLevel = rootView.findViewById(R.id.tv_weather_risk_level);
+        healthEffects = rootView.findViewById(R.id.health_effects);
+        recommendedActions = rootView.findViewById(R.id.recommended_actions);
+        LinearProgressIndicator progressBar = rootView.findViewById(R.id.progressBar);
 
         Bundle bundle = getArguments();
         if (bundle != null) {
+            progressBar.setVisibility(View.GONE);
             String dangerLevelVal = bundle.getString("dangerLevel");
-            //dangerLevel = rootView.findViewById(R.id.tv_danger_level);
             dangerLevel.setText(dangerLevelVal);
 
             double heatIndexVal = bundle.getDouble("heatIndex");
-            //heatIndex = rootView.findViewById(R.id.tv_heat_index);
-            //heatIndex.setText(Double.toString(heatIndexVal));
-
+            heatIndex.setText(Double.toString(heatIndexVal));
+            setImageEffectsAndRecommendations(dangerLevelVal);
 
         }else {
-            LinearProgressIndicator progressBar = rootView.findViewById(R.id.progressBar);
+
             progressBar.setVisibility(View.VISIBLE);
             fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(getContext());
             if(ContextCompat.checkSelfPermission(getContext(), android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED){
@@ -121,17 +128,8 @@ public class RecommendationFragment extends Fragment {
                     @Override
                     public void onSuccess(Location location) {
                         if(location != null){
-                            Geocoder geocoder = new Geocoder(getContext(), Locale.getDefault());
-                            try {
-                                List<Address> addresses = geocoder.getFromLocation( location.getLatitude(), location.getLongitude(), 1);
-                                Toast.makeText(getContext(), addresses.get(0).getLocality(), Toast.LENGTH_LONG).show();
-                            } catch (IOException e) {
-                                throw new RuntimeException(e);
-                            }
-
                             // Instantiate the RequestQueue.
                             RequestQueue queue = Volley.newRequestQueue(getContext());
-
                             String url = "https://api.open-meteo.com/v1/forecast?latitude="+ location.getLatitude() + "&longitude=" + location.getLongitude() + "&current=temperature_2m,relative_humidity_2m&temperature_unit=fahrenheit&timezone=auto&forecast_days=1";
 
                             // Request a string response from the provided URL.
@@ -144,17 +142,9 @@ public class RecommendationFragment extends Fragment {
                                                 //Extract "current" object
                                                 JSONObject currentObject = response.getJSONObject("current");
                                                 WeatherData currentWeatherData = new WeatherData("", currentObject.getDouble("temperature_2m"), currentObject.getDouble("relative_humidity_2m"));
-
-                                                //current heat index
-                                                //heatIndex = rootView.findViewById(R.id.tv_heat_index);
-                                                //heatIndex.setText(Double.toString(currentWeatherData.getHeatIndex()));
-
-                                                //current risk level
-                                                //dangerLevel = rootView.findViewById(R.id.tv_danger_level);
+                                                heatIndex.setText(Double.toString(currentWeatherData.getHeatIndex()));
                                                 dangerLevel.setText(currentWeatherData.dangerLevel());
-
-                                                //get imageview
-                                                //ImageView weatherIcon = rootView.findViewById(R.id.imageView);
+                                                setImageEffectsAndRecommendations(currentWeatherData.dangerLevel());
 
                                             }
                                             catch (Exception e){
@@ -179,5 +169,35 @@ public class RecommendationFragment extends Fragment {
             }
         }
         return rootView;
+    }
+
+    void setImageEffectsAndRecommendations(String dangerLevel){
+        switch (dangerLevel){
+            case "Safe":
+                stockImage.setImageResource(R.drawable.construction_worker_safe);
+                healthEffects.setText(R.string.effects_safe);
+                recommendedActions.setText(R.string.actions_safe);
+                break;
+            case "Caution":
+                stockImage.setImageResource(R.drawable.construction_worker_caution);
+                healthEffects.setText(R.string.effects_caution);
+                recommendedActions.setText(R.string.actions_caution);
+                break;
+            case "Extreme Caution":
+                stockImage.setImageResource(R.drawable.construction_worker_extreme_caution);
+                healthEffects.setText(R.string.effects_extreme_caution);
+                recommendedActions.setText(R.string.actions_extreme_caution);
+                break;
+            case "Danger":
+                stockImage.setImageResource(R.drawable.construction_worker_danger);
+                healthEffects.setText(R.string.effects_danger);
+                recommendedActions.setText(R.string.actions_danger);
+                break;
+            case "Extreme Danger":
+                stockImage.setImageResource(R.drawable.construction_worker_extreme_danger);
+                healthEffects.setText(R.string.effects_extreme_danger);
+                recommendedActions.setText(R.string.actions_extreme_danger);
+                break;
+        }
     }
 }
