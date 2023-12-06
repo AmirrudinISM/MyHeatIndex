@@ -10,10 +10,13 @@ import android.os.Bundle;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -158,13 +161,16 @@ public class WeatherFragment extends Fragment {
                                                 else{
                                                     weatherIcon.setImageResource(R.drawable.clear_night_48px);
                                                 }
-                                            }
-                                            else if(isBetween(hour, 50, 59)){
+                                            } else if (weatherCode == 3) {
+                                                weatherIcon.setImageResource(R.drawable.baseline_cloud_48);
+                                            } else if(isBetween(weatherCode, 50, 59)){
+                                                weatherIcon.setImageResource(R.drawable.weather_hail_48px);
+                                            } else if (isBetween(weatherCode, 80,94)){
                                                 weatherIcon.setImageResource(R.drawable.rainy_48px);
-                                            } else if (isBetween(hour, 95,99)) {
-                                                weatherIcon.setImageResource(R.drawable.thunderstorm_48px);
                                             }
-                                            else {
+                                            else if (isBetween(weatherCode, 95,99)) {
+                                                weatherIcon.setImageResource(R.drawable.thunderstorm_48px);
+                                            } else {
                                                 if( isBetween(hour,7,19)){
                                                     weatherIcon.setImageResource(R.drawable.partly_cloudy_day_48px);
                                                 }
@@ -199,6 +205,27 @@ public class WeatherFragment extends Fragment {
                                             HourlyWeatherDataAdapter hourlyWeatherDataAdapter = new HourlyWeatherDataAdapter(getContext(), weatherData);
                                             listView.setAdapter(hourlyWeatherDataAdapter);
 
+                                            listView.setOnItemClickListener((adapterView, view, i, l) -> {
+                                                TextView tvClassification = (TextView)view.findViewById(R.id.tv_classification);
+                                                String classification = tvClassification.getText().toString();
+
+                                                TextView tvHeatIndex = (TextView)view.findViewById(R.id.tv_heat_index);
+                                                String heatIndex = tvHeatIndex.getText().toString();
+
+                                                Bundle bundle = new Bundle();
+                                                bundle.putString("dangerLevel", classification);
+                                                bundle.putDouble("heatIndex", Double.valueOf(heatIndex));
+
+                                                RecommendationFragment fragment = new RecommendationFragment();
+                                                fragment.setArguments(bundle);
+
+                                                FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+                                                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                                                fragmentTransaction.replace(R.id.frameLayout, fragment);
+                                                fragmentTransaction.addToBackStack(null); // Optional: Adds the transaction to the back stack
+                                                fragmentTransaction.commit();
+                                            });
+
                                         }
                                         catch (Exception e){
                                             progressBar.setVisibility(View.GONE);
@@ -220,12 +247,6 @@ public class WeatherFragment extends Fragment {
         }else {
             ActivityCompat.requestPermissions(getActivity(), new String[] {Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_CODE);
         }
-
-
-
-
-
-
         return rootView;
     }
 
